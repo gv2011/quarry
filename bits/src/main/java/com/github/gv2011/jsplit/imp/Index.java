@@ -8,38 +8,35 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.gv2011.jsplit.SliceWriter;
-import com.github.gv2011.quarry.cfs.HashImp;
+import com.github.gv2011.quarry.bits.Serializer;
 import com.github.gv2011.quarry.util.Hash;
 
 class Index {
 
-  private final List<Entry> entries = new ArrayList<>();
   private final int headerSize = 5;
   private final int entrySize = Entry.SIZE;
 
   private final int blockSize;
   private final int maxEntries;
-  private final SliceWriter writer;
 
+  private final List<Entry> entries = new ArrayList<>();
 
-  Index(final SliceWriter writer) {
-    this(writer, 8192);
+  Index() {
+    this(8192);
   }
 
 
-  Index(final SliceWriter writer, final int blockSize) {
+  Index(final int blockSize) {
     this.blockSize = blockSize;
     maxEntries = (blockSize-headerSize)/entrySize;
     assert maxEntries>0;
     assert blockSize>0 && blockSize<=0xFFFF;
-    this.writer = writer;
   }
-
 
   private boolean inlined;
 
 
-  Hash split(final InputStream in) {
+  Hash split(final InputStream in, final SliceWriter writer) {
     final byte[] buffer = new byte[blockSize];
     boolean done = false;
     int sizePl = 0;
@@ -48,7 +45,7 @@ class Index {
       if(sizePl<blockSize) done=true;
       else{
         final Entry entry = finishData(buffer, sizePl);
-        write(buffer, entry);
+        write(buffer, entry, writer);
         add(entry);
         }
     }
@@ -60,11 +57,11 @@ class Index {
       entry = finishIndex(buffer);
     }else{
       entry = finishData(buffer, sizePl);
-      write(buffer, entry);
+      write(buffer, entry, writer);
       add(entry);
       entry = finishIndex(buffer);
     }
-    write(buffer, entry);
+    write(buffer, entry, writer);
     return entry.hash;
   }
 
@@ -100,7 +97,7 @@ class Index {
     return total;
   }
 
-  private void write(final byte[] buffer, final Entry entry) {
+  private void write(final byte[] buffer, final Entry entry, final SliceWriter writer) {
     try(OutputStream out = writer.getOutputStream(entry.hash, entry.size)){
       out.write(buffer, 0, entry.size);
     } catch (final IOException e) {throw new RuntimeException(e);}
@@ -127,10 +124,10 @@ class Index {
     assert entriesCount>=0 && entriesCount<=maxEntries;
     //contract.
     int offset = 0;
-    offset+=writeShort(entriesCount, buffer, offset);
+    offset+=Serializer.writeShort(entriesCount, buffer, offset);
     final int lastEntrySize = entriesCount==0?0:entries.get(entriesCount-1).size;
-    offset+=writeShort(lastEntrySize, buffer, offset);
-    buffer[offset++] = (byte) (inlined?1:0);
+    offset+=Serializer.writeShort(lastEntrySize, buffer, offset);
+    offset+=Serializer.writeBoolean(inlined, buffer, offset);
     assert offset==headerSize;
     for(final Entry e: entries){
       e.write(buffer, offset);
@@ -138,27 +135,5 @@ class Index {
     }
     return new Entry(buffer, offset);
   }
-
-  private int writeShort(final int sh, final byte[] buffer, final int offset) {
-    assert sh>=0 && sh <= 0xFFFF;
-    //contract.
-    buffer[offset] = (byte) (sh>>8);
-    buffer[offset+1] = (byte) sh;
-    return 2;
-  }
-
-  private static class Entry{
-    public static final int SIZE = HashImp.SIZE;
-    private final int size;
-    private final Hash hash;
-    private Entry(final byte[] buffer, final int size) {
-      this.size = size;
-      hash = HashImp.digest(buffer, 0, size);
-    }
-    int write(final byte[] buffer, final int offset) {
-      return hash.write(buffer, offset);
-    }
-  }
-
 
 }

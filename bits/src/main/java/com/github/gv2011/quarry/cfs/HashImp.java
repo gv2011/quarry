@@ -1,5 +1,7 @@
 package com.github.gv2011.quarry.cfs;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -45,7 +47,7 @@ public final class HashImp extends AbstractBytes<Hash> implements Hash{
 
 	private final byte[] digest;
 
-	private HashImp(final byte[] digest){
+	HashImp(final byte[] digest){
 		assert digest.length==SIZE;
 		this.digest = digest;
 	}
@@ -64,6 +66,19 @@ public final class HashImp extends AbstractBytes<Hash> implements Hash{
 	public Class<Hash> interfaze() {
 		return Hash.class;
 	}
+
+  public static Hash read(final InputStream in) {
+    final byte[] digest = new byte[SIZE];
+    int i=0;
+    while(i<SIZE){
+      try {
+        final int count = in.read(digest, i, SIZE-i);
+        if(count<=0) throw new IllegalArgumentException("Premature end of stream.");
+        i+=count;
+      } catch (final IOException e) {throw new RuntimeException(e);}
+    }
+    return null;
+  }
 
 
 

@@ -9,8 +9,8 @@
 	<artifactId>quarry</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	
-	<name>Vinz Quarry</name>
+
+	<name>Copyright (C) 2016 Vinz (https://github.com/gv2011) Quarry</name>
 	<description>Bits, pieces, examples, experiments.</description>
 	<url>https://github.com/gv2011/quarry</url>
 
@@ -24,17 +24,21 @@
 	<developers>
 		<developer>
 			<id>gv2011</id>
-			<name>Vinz</name>
+			<name>Copyright (C) 2016 Vinz (https://github.com/gv2011)</name>
 			<url>https://github.com/gv2011</url>
 		</developer>
 	</developers>
-	
+
 	<scm>
 		<connection>scm:git:git://github.com/gv2011/quarry.git</connection>
 		<developerConnection>scm:git:git@github.com:gv2011/quarry.git</developerConnection>
 		<url>https://github.com/gv2011/quarry</url>
 		<tag>HEAD</tag>
 	</scm>
-	
+
+	<modules>
+		<module>bits</module>
+		<module>examples</module>
+	</modules>
 
 </project>
