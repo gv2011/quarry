@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class InternalStringTest {
 
-@Test
+//@Test Manual execution only
 public void test() {
   long i=0;
   final WeakHashMap<String,Integer> numeric = new WeakHashMap<>();
