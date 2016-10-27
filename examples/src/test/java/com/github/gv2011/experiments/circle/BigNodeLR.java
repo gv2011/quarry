@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class BigNodeTest {
+public class BigNodeLR {
 
 @Test
 public void test() {
@@ -24,7 +25,7 @@ public void test() {
       n1.findLeft(n, recursions);
     }
     final Instant end = Instant.now();
-    System.out.println(((float)Duration.between(start, end).toMillis())/100F);
+    System.out.println((Duration.between(start, end).toMillis())/100F);
     System.out.println(recursions.get()/100);
   }
   {
@@ -34,7 +35,7 @@ public void test() {
       n1.add(n, recursions);
     }
     final Instant end = Instant.now();
-    System.out.println(((float)Duration.between(start, end).toMillis())/100F);
+    System.out.println((Duration.between(start, end).toMillis())/100F);
     System.out.println(recursions.get()/100);
   }
 }
