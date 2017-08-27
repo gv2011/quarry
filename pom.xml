@@ -43,6 +43,11 @@
 	</modules>
 
 	<dependencies>
+    <dependency>
+      <groupId>com.github.gv2011</groupId>
+      <artifactId>util-test</artifactId>
+      <scope>test</scope>
+    </dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
