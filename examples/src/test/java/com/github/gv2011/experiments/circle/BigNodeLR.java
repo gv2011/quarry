@@ -12,6 +12,7 @@ import org.junit.Test;
 public class BigNodeLR {
 
 @Test
+@Ignore("long")
 public void test() {
   final Node n1 = new Node();
   for(int i=0; i<100000; i++) n1.add(new Node());

@@ -12,6 +12,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -29,11 +30,12 @@ public class AESEncryption {
 	}
 
 	@Test
+	@Ignore("needsUnlimitedPolicy")
 	public void encryptAndDecryptTestUnlimitedPolicy() throws Exception{
 		assertThat(encryptAndDecryptTest(32, "NOPADDING").length, is(8192));
 	}
 
-	private byte[] encryptAndDecryptTest(int keysize, String padding) throws Exception{
+	private byte[] encryptAndDecryptTest(final int keysize, final String padding) throws Exception{
 	  final Random random =  new SecureRandom();
 	  final byte[] ivb = new byte[16];
 	  random.nextBytes(ivb);

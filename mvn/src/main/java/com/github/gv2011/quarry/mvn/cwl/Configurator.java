@@ -1,0 +1,232 @@
+package com.github.gv2011.quarry.mvn.cwl;
+
+/*
+ * Copyright 2001-2006 Codehaus Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.codehaus.plexus.classworlds.ClassWorld;
+import org.codehaus.plexus.classworlds.realm.ClassRealm;
+import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
+import org.codehaus.plexus.classworlds.realm.NoSuchRealmException;
+
+/**
+ * <code>Launcher</code> configurator.
+ *
+ * @author <a href="mailto:bob@eng.werken.com">bob mcwhirter</a>
+ * @author Jason van Zyl
+ */
+public class Configurator implements ConfigurationHandler
+{
+    /**
+     * The launcher to configure.
+     */
+    private Launcher launcher;
+
+    private ClassWorld world;
+
+    /**
+     * Processed Realms.
+     */
+    private Map<String, ClassRealm> configuredRealms;
+
+    /**
+     * Current Realm.
+     */
+    private ClassRealm curRealm;
+
+    private ClassLoader foreignClassLoader = null;
+
+    /**
+     * Construct.
+     *
+     * @param launcher The launcher to configure.
+     */
+    public Configurator( final Launcher launcher )
+    {
+        this.launcher = launcher;
+
+        configuredRealms = new HashMap<>();
+
+        if ( launcher != null )
+        {
+            foreignClassLoader = launcher.getSystemClassLoader();
+        }
+    }
+
+    /**
+     * Construct.
+     *
+     * @param world The classWorld to configure.
+     */
+    public Configurator( final ClassWorld world )
+    {
+        setClassWorld( world );
+    }
+
+    /**
+     * set world.
+     * this setter is provided so you can use the same configurator to configure several "worlds"
+     *
+     * @param world The classWorld to configure.
+     */
+    public void setClassWorld( final ClassWorld world )
+    {
+        this.world = world;
+
+        configuredRealms = new HashMap<>();
+    }
+
+    /**
+     * Configure from a file.
+     *
+     * @param is The config input stream
+     * @throws IOException             If an error occurs reading the config file.
+     * @throws MalformedURLException   If the config file contains invalid URLs.
+     * @throws ConfigurationException  If the config file is corrupt.
+     * @throws org.codehaus.plexus.classworlds.realm.DuplicateRealmException If the config file defines two realms with the same id.
+     * @throws org.codehaus.plexus.classworlds.realm.NoSuchRealmException    If the config file defines a main entry point in
+     *                                 a non-existent realm.
+     */
+    public void configure( final InputStream is )
+        throws IOException, ConfigurationException, DuplicateRealmException, NoSuchRealmException
+    {
+        if ( world == null )
+        {
+            world = new ClassWorld();
+        }
+
+        curRealm = null;
+
+        foreignClassLoader = null;
+
+        if ( launcher != null )
+        {
+            foreignClassLoader = launcher.getSystemClassLoader();
+        }
+
+        final ConfigurationParser parser = new ConfigurationParser( this, System.getProperties() );
+
+        parser.parse( is );
+
+        // Associate child realms to their parents.
+        associateRealms();
+
+        if ( launcher != null )
+        {
+            launcher.setWorld( world );
+        }
+
+    }
+
+    // TODO return this to protected when the legacy wrappers can be removed.
+    /**
+     * Associate parent realms with their children.
+     */
+    public void associateRealms()
+    {
+        final List<String> sortRealmNames = new ArrayList<>( configuredRealms.keySet() );
+
+        // sort by name
+        final Comparator<String> comparator = (g1, g2) -> g1.compareTo( g2 );
+
+        Collections.sort( sortRealmNames, comparator );
+
+        // So now we have something like the following for defined
+        // realms:
+        //
+        // root
+        // root.maven
+        // root.maven.plugin
+        //
+        // Now if the name of a realm is a superset of an existing realm
+        // the we want to make child/parent associations.
+
+        for ( final String realmName : sortRealmNames )
+        {
+            final int j = realmName.lastIndexOf( '.' );
+
+            if ( j > 0 )
+            {
+                final String parentRealmName = realmName.substring( 0, j );
+
+                final ClassRealm parentRealm = configuredRealms.get( parentRealmName );
+
+                if ( parentRealm != null )
+                {
+                    final ClassRealm realm = configuredRealms.get( realmName );
+
+                    realm.setParentRealm( parentRealm );
+                }
+            }
+        }
+    }
+
+    @Override
+    public void addImportFrom( final String relamName, final String importSpec )
+        throws NoSuchRealmException
+    {
+        curRealm.importFrom( relamName, importSpec );
+    }
+
+    @Override
+    public void addLoadFile( final File file )
+    {
+        try
+        {
+            curRealm.addURL( file.toURI().toURL() );
+        }
+        catch ( final MalformedURLException e )
+        {
+            // can't really happen... or can it?
+        }
+    }
+
+    @Override
+    public void addLoadURL( final URL url )
+    {
+        curRealm.addURL( url );
+    }
+
+    @Override
+    public void addRealm( final String realmName )
+        throws DuplicateRealmException
+    {
+        curRealm = world.newRealm( realmName, foreignClassLoader );
+
+        // Stash the configured realm for subsequent association processing.
+        configuredRealms.put( realmName, curRealm );
+    }
+
+    @Override
+    public void setAppMain( final String mainClassName, final String mainRealmName )
+    {
+        if ( launcher != null )
+        {
+            launcher.setAppMain( mainClassName, mainRealmName );
+        }
+    }
+}
