@@ -7,12 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreePath;
-
 import org.slf4j.Logger;
 
 
+@SuppressWarnings("unused")//TODO wip
 public class ViewNode {
 
   private static final Logger LOG = getLogger(ViewNode.class);

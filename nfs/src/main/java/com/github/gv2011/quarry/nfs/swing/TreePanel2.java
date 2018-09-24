@@ -1,5 +1,5 @@
 package com.github.gv2011.quarry.nfs.swing;
-import static com.github.gv2011.util.ex.Exceptions.run;
+import static com.github.gv2011.util.ex.Exceptions.call;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -93,7 +93,7 @@ class TreePanel2 extends JPanel{
             });
           }
         }
-        while(!invalid) run(lock::wait);
+        while(!invalid) call(()->lock.wait());
       }
     }
   }

@@ -18,6 +18,7 @@ class SplitterImp implements Splitter{
     return new Index().split(in, sliceWriter);
   }
 
+  @SuppressWarnings("unused") //TODO wip
   @Override
   public void join(final Hash ref, final SliceReader sliceSource, final OutputStream out) {
     final InputStream in = sliceSource.get(ref);

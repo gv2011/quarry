@@ -1,7 +1,7 @@
 package com.github.gv2011.quarry.nfs.swing;
 
-import static com.github.gv2011.util.CollectionUtils.iCollections;
 import static com.github.gv2011.util.Verify.verify;
+import static com.github.gv2011.util.icol.ICollections.iCollections;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -72,7 +72,7 @@ public class TestNode implements Node{
         value = Optional.empty();
         requested = false;
         invalidateDeps = true;
-        dependants = iCollections().setOf(this.dependants);
+        dependants = iCollections().setFrom(this.dependants);
         this.dependants.clear();
       }
     }
@@ -103,7 +103,7 @@ public class TestNode implements Node{
           verify(requested && loader!=null && !invalidating && !TestNode.this.value.isPresent());
           TestNode.this.value = Optional.of(value);
           System.out.println("loaded");
-          dependants = iCollections().setOf(TestNode.this.dependants);
+          dependants = iCollections().setFrom(TestNode.this.dependants);
           TestNode.this.dependants.clear();
           loaded = true;
         }else loaded = false;

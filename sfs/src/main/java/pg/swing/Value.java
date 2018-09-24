@@ -1,6 +1,6 @@
 package pg.swing;
 
-import static com.github.gv2011.util.ex.Exceptions.run;
+import static com.github.gv2011.util.ex.Exceptions.call;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class Value<T> {
         invalidators = new ArrayList<>();
       }
     }
-    run(()->SwingUtilities.invokeAndWait(()->{
+    call(()->SwingUtilities.invokeAndWait(()->{
       for(final Invalidator i: invalidators) i.invalidate();
     }));
   }

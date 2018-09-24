@@ -3,10 +3,8 @@ package pg.swing;
 import static com.github.gv2011.util.Verify.verify;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import javax.swing.SwingUtilities;
-
+@SuppressWarnings("unused")//TODO wip
 abstract class VarImp<T> implements Var<T>{
 
   private final VarManager varManager;

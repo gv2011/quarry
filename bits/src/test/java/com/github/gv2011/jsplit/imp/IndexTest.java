@@ -30,6 +30,7 @@ public class IndexTest {
 //    testSplit(createData(64));
 //  }
 
+  @SuppressWarnings("unused") //TODO wip
   private byte[] createData(final int size) {
     final byte[] result = new byte[size];
     for(int i=0; i<size; i++) result[i]=(byte) i;
@@ -58,6 +59,7 @@ public class IndexTest {
 //
 //  }
 
+@SuppressWarnings("unused") //TODO wip
 private class TestStore implements SliceWriter {
 
   @Override

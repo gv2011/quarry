@@ -344,6 +344,7 @@ public final class FfsPath implements Path{
     else return e;
   }
 
+  @SuppressWarnings("unused") //TODO wip
   private String escape2(final String e) {
     if(e.isEmpty()) return e;
     else{

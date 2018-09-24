@@ -1,4 +1,5 @@
 package com.github.gv2011.quarry.nfs.swing;
+import static com.github.gv2011.util.ex.Exceptions.call;
 import static com.github.gv2011.util.ex.Exceptions.run;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,6 +26,7 @@ import com.github.gv2011.quarry.nfs.Invalidatable;
 import com.github.gv2011.quarry.nfs.Node;
 import com.github.gv2011.quarry.nfs.NodeValue;
 
+@SuppressWarnings("unused") //TODO
 class TreePanel extends JPanel{
 
   private static final Logger LOG = getLogger(TreePanel.class);
@@ -115,7 +117,7 @@ class TreePanel extends JPanel{
   }
 
   private void invalidatePanel(final boolean invalidate){
-    run(()->SwingUtilities.invokeAndWait(()->{
+    call(()->SwingUtilities.invokeAndWait(()->{
       updateTreeNode();
       repaint();
     }));

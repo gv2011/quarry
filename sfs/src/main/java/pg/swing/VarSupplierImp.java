@@ -4,6 +4,7 @@ import static com.github.gv2011.util.ex.Exceptions.notYetImplementedException;
 
 import java.util.Optional;
 
+@SuppressWarnings("unused")//TODO wip
 public class VarSupplierImp implements VarSupplier{
 
   private final VarManager varManager;

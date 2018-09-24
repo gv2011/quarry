@@ -1,14 +1,12 @@
 package pg.swing;
 
-import static com.github.gv2011.util.ex.Exceptions.doWithCloseable;
+import static com.github.gv2011.util.ex.Exceptions.callWithCloseable;
 
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JTree;
@@ -19,7 +17,7 @@ import com.github.gv2011.util.ExecutorUtils;
 public class TreeTest {
 
   public static void main(final String[] args) throws InterruptedException{
-    doWithCloseable(
+    callWithCloseable(
       Executors::newCachedThreadPool,
       es->{
         final CountDownLatch terminate = new CountDownLatch(1);

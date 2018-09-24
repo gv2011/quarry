@@ -1,10 +1,6 @@
 package pg.swing;
 
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.SwingUtilities;
 

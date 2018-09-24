@@ -1,7 +1,7 @@
 package com.github.gv2011.quarry.nfs.swing;
 
-import static com.github.gv2011.util.CollectionUtils.iCollections;
-import static com.github.gv2011.util.ex.Exceptions.run;
+import static com.github.gv2011.util.ex.Exceptions.call;
+import static com.github.gv2011.util.icol.ICollections.iCollections;
 
 import java.util.Optional;
 
@@ -20,12 +20,12 @@ public class Main2 {
   }
 
   private static void createAndShowGUI() {
-    run(()->UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()));
+    call(()->UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()));
     final JFrame frame = new JFrame("TreeDemo");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     final NodeValue nodeValue = createNodeValue("root");
     final TestNode node = new TestNode(()->{
-      run(()->Thread.sleep(2000));
+      call(()->Thread.sleep(2000));
       return nodeValue;
     });
     final TreePanel tree = new TreePanel(node);
